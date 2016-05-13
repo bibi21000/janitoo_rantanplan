@@ -1,0 +1,23 @@
+janitoo_rantanplan package
+==========================
+
+Show janitoo's extensions.
+
+Core extensions
+---------------
+
+Threads
+^^^^^^^
+
+ - rantanplan (janitoo_rantanplan.thread_rantanplan:make_thread)
+
+Components
+^^^^^^^^^^
+
+ - rantanplan.cpu (janitoo_rantanplan.rantanplan:make_cpu)
+ - rantanplan.pir (janitoo_rantanplan.rantanplan:make_pir)
+ - rantanplan.proximity (janitoo_rantanplan.rantanplan:make_proximity)
+ - rantanplan.led (janitoo_rantanplan.rantanplan:make_led)
+ - rantanplan.temperature (janitoo_rantanplan.rantanplan:make_temperature)
+ - rantanplan.ambiance (janitoo_rantanplan.rantanplan:make_ambiance)
+

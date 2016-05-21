@@ -1,23 +1,7 @@
-janitoo_rantanplan package
-==========================
+Janitoo's extensions
+====================
 
-Show janitoo's extensions.
+This package contains the following extensions for Janitoo.
 
-Core extensions
----------------
-
-Threads
-^^^^^^^
-
- - rantanplan (janitoo_rantanplan.thread_rantanplan:make_thread)
-
-Components
-^^^^^^^^^^
-
- - rantanplan.cpu (janitoo_rantanplan.rantanplan:make_cpu)
- - rantanplan.pir (janitoo_rantanplan.rantanplan:make_pir)
- - rantanplan.proximity (janitoo_rantanplan.rantanplan:make_proximity)
- - rantanplan.led (janitoo_rantanplan.rantanplan:make_led)
- - rantanplan.temperature (janitoo_rantanplan.rantanplan:make_temperature)
- - rantanplan.ambiance (janitoo_rantanplan.rantanplan:make_ambiance)
+.. jnt-extensions::
 

@@ -158,7 +158,7 @@
 <span class="k">assert</span><span class="p">(</span><span class="n">COMMAND_DESC</span><span class="p">[</span><span class="n">COMMAND_CONTROLLER</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;COMMAND_CONTROLLER&#39;</span><span class="p">)</span>
 <span class="c">##############################################################</span>
 
-<span class="n">OID</span><span class="o">=</span><span class="s">&#39;rantanplan&#39;</span>
+<span class="kn">from</span> <span class="nn">janitoo_rantanplan</span> <span class="kn">import</span> <span class="n">OID</span>
 
 <div class="viewcode-block" id="make_thread"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.thread_rantanplan.make_thread">[docs]</a><span class="k">def</span> <span class="nf">make_thread</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">get_option_autostart</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">OID</span><span class="p">)</span> <span class="ow">or</span> <span class="n">force</span><span class="p">:</span>

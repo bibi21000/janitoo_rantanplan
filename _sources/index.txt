@@ -8,7 +8,7 @@ Contents:
 
     Installation <INSTALL>
     State machine <state_machine>
-
+    Using documentation <using_doc>
 
 Indices and tables
 ==================

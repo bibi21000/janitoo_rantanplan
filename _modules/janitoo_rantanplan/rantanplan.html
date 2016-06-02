@@ -150,7 +150,8 @@
 <span class="kn">from</span> <span class="nn">janitoo.node</span> <span class="kn">import</span> <span class="n">JNTNode</span>
 <span class="kn">from</span> <span class="nn">janitoo.value</span> <span class="kn">import</span> <span class="n">JNTValue</span>
 <span class="kn">from</span> <span class="nn">janitoo.component</span> <span class="kn">import</span> <span class="n">JNTComponent</span>
-<span class="kn">from</span> <span class="nn">janitoo.bus</span> <span class="kn">import</span> <span class="n">JNTBus</span>
+
+<span class="kn">from</span> <span class="nn">janitoo_factory.buses.fsm</span> <span class="kn">import</span> <span class="n">JNTFsmBus</span>
 
 <span class="kn">from</span> <span class="nn">janitoo_raspberry_dht.dht</span> <span class="kn">import</span> <span class="n">DHTComponent</span>
 <span class="kn">from</span> <span class="nn">janitoo_raspberry_gpio.gpio</span> <span class="kn">import</span> <span class="n">GpioBus</span><span class="p">,</span> <span class="n">OutputComponent</span><span class="p">,</span> <span class="n">PirComponent</span> <span class="k">as</span> <span class="n">GPIOPir</span><span class="p">,</span> <span class="n">LedComponent</span> <span class="k">as</span> <span class="n">GPIOLed</span><span class="p">,</span> <span class="n">SonicComponent</span>
@@ -193,11 +194,12 @@
     <span class="k">return</span> <span class="n">CpuComponent</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="RantanplanBus"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus">[docs]</a><span class="k">class</span> <span class="nc">RantanplanBus</span><span class="p">(</span><span class="n">JNTBus</span><span class="p">):</span>
+<div class="viewcode-block" id="RantanplanBus"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus">[docs]</a><span class="k">class</span> <span class="nc">RantanplanBus</span><span class="p">(</span><span class="n">JNTFsmBus</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A bus to manage Rantanplan</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">states</span> <span class="o">=</span> <span class="p">[</span>
+       <span class="s">&#39;booting&#39;</span><span class="p">,</span>
        <span class="s">&#39;sleeping&#39;</span><span class="p">,</span>
        <span class="s">&#39;reporting&#39;</span><span class="p">,</span>
        <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;guarding&#39;</span><span class="p">,</span>
@@ -219,21 +221,29 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">transitions</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;wakeup&#39;</span><span class="p">,</span>
-            <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
-            <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;reporting&#39;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;report&#39;</span><span class="p">,</span>
-            <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
-            <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;reporting&#39;</span><span class="p">,</span>
+        <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;boot&#39;</span><span class="p">,</span>
+            <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;booting&#39;</span><span class="p">,</span>
+            <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;sleeping&#39;</span><span class="p">,</span>
+            <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="s">&#39;condition_values&#39;</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;sleep&#39;</span><span class="p">,</span>
             <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
             <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;sleeping&#39;</span><span class="p">,</span>
         <span class="p">},</span>
+        <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;wakeup&#39;</span><span class="p">,</span>
+            <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
+            <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;reporting&#39;</span><span class="p">,</span>
+            <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="s">&#39;condition_values&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;report&#39;</span><span class="p">,</span>
+            <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
+            <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;reporting&#39;</span><span class="p">,</span>
+            <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="s">&#39;condition_values&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;guard&#39;</span><span class="p">,</span>
             <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
             <span class="s">&#39;dest&#39;</span><span class="p">:</span> <span class="s">&#39;guarding&#39;</span><span class="p">,</span>
+            <span class="s">&#39;conditions&#39;</span><span class="p">:</span> <span class="s">&#39;condition_values&#39;</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="p">{</span> <span class="s">&#39;trigger&#39;</span><span class="p">:</span> <span class="s">&#39;bark&#39;</span><span class="p">,</span>
             <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;guarding&#39;</span><span class="p">,</span>
@@ -260,18 +270,17 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">JNTBus</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">JNTFsmBus</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buses</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="s">&#39;gpiobus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GpioBus</span><span class="p">(</span><span class="n">masters</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="s">&#39;1wire&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OnewireBus</span><span class="p">(</span><span class="n">masters</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_statemachine</span> <span class="o">=</span>  <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_timer</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">uuid</span><span class="o">=</span><span class="s">&quot;{:s}_timer_delay&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">OID</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">uuid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_factory</span><span class="p">[</span><span class="s">&#39;config_integer&#39;</span><span class="p">](</span><span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
             <span class="n">node_uuid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s">&#39;The delay between 2 checks&#39;</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="s">&#39;Timer.&#39;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">uuid</span><span class="o">=</span><span class="s">&quot;{:s}_temperature_critical&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">OID</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">uuid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_factory</span><span class="p">[</span><span class="s">&#39;config_integer&#39;</span><span class="p">](</span><span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
@@ -301,17 +310,27 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="RantanplanBus.polled_sensors"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.polled_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">polled_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The sensors we will poll</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;temperature&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;ambiance&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;cpu&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;ambiance&#39;</span><span class="p">,</span> <span class="s">&#39;humidity&#39;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;cpu&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;cpu&#39;</span><span class="p">,</span> <span class="s">&#39;voltage&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;cpu&#39;</span><span class="p">,</span> <span class="s">&#39;frequency&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;led&#39;</span><span class="p">,</span> <span class="s">&#39;switch&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;led&#39;</span><span class="p">,</span> <span class="s">&#39;blink&#39;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;pir&#39;</span><span class="p">,</span> <span class="s">&#39;status&#39;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;sonic&#39;</span><span class="p">,</span> <span class="s">&#39;status&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;proximity&#39;</span><span class="p">,</span> <span class="s">&#39;status&#39;</span><span class="p">),</span>
         <span class="p">]</span>
+</div>
+<div class="viewcode-block" id="RantanplanBus.condition_values"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.condition_values">[docs]</a>    <span class="k">def</span> <span class="nf">condition_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if all sensors are available</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">polled_sensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polled_sensors</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] - condition_values sensors : </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">polled_sensors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">polled_sensors</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="RantanplanBus.on_enter_reporting"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.on_enter_reporting">[docs]</a>    <span class="k">def</span> <span class="nf">on_enter_reporting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -334,10 +353,17 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">remove_polls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polled_sensors</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="s">&#39;led&#39;</span><span class="p">,</span> <span class="s">&#39;blink&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">&#39;off&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeman</span><span class="o">.</span><span class="n">find_bus_value</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">poll_delay</span> <span class="o">=</span> <span class="mi">900</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] - Error in on_enter_sleeping&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bus_release</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="RantanplanBus.on_exit_sleeping"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.on_exit_sleeping">[docs]</a>    <span class="k">def</span> <span class="nf">on_exit_sleeping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] - on_exit_sleeping&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_check</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="RantanplanBus.on_enter_guarding"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.on_enter_guarding">[docs]</a>    <span class="k">def</span> <span class="nf">on_enter_guarding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -426,34 +452,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="n">bus</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">mqttc</span><span class="p">,</span> <span class="n">trigger_thread_reload_cb</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-        <span class="n">JNTBus</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mqttc</span><span class="p">,</span> <span class="n">trigger_thread_reload_cb</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_statemachine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_fsm</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="RantanplanBus.create_fsm"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.create_fsm">[docs]</a>    <span class="k">def</span> <span class="nf">create_fsm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create the fsm</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Machine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">states</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
-            <span class="n">transitions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">,</span>
-            <span class="n">initial</span><span class="o">=</span><span class="s">&#39;sleeping&#39;</span><span class="p">)</span>
+        <span class="n">JNTFsmBus</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mqttc</span><span class="p">,</span> <span class="n">trigger_thread_reload_cb</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="RantanplanBus.stop"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Stop the bus</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_check</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="n">bus</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-        <span class="n">JNTBus</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="RantanplanBus.check_heartbeat"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.check_heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">check_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check that the component is &#39;available&#39;</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="c">#~ for bus in self.buses:</span>
-            <span class="c">#~ res = res and self.buses[bus].check_heartbeat()</span>
-        <span class="k">return</span> <span class="n">res</span>
+        <span class="n">JNTFsmBus</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="RantanplanBus.loop"><a class="viewcode-back" href="../../api/index.html#janitoo_rantanplan.rantanplan.RantanplanBus.loop">[docs]</a>    <span class="k">def</span> <span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stopevent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Retrieve data</span>

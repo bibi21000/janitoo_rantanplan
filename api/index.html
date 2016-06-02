@@ -155,7 +155,7 @@
 <dl class="class">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus">
 <em class="property">class </em><tt class="descclassname">janitoo_rantanplan.rantanplan.</tt><tt class="descname">RantanplanBus</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">janitoo.bus.JNTBus</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">janitoo_factory.buses.fsm.JNTFsmBus</span></tt></p>
 <p>A bus to manage Rantanplan</p>
 <dl class="method">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus.bus_acquire">
@@ -176,15 +176,9 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="janitoo_rantanplan.rantanplan.RantanplanBus.check_heartbeat">
-<tt class="descname">check_heartbeat</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.check_heartbeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.check_heartbeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that the component is &#8216;available&#8217;</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="janitoo_rantanplan.rantanplan.RantanplanBus.create_fsm">
-<tt class="descname">create_fsm</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.create_fsm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.create_fsm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create the fsm</p>
+<dt id="janitoo_rantanplan.rantanplan.RantanplanBus.condition_values">
+<tt class="descname">condition_values</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.condition_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.condition_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if all sensors are available</p>
 </dd></dl>
 
 <dl class="method">
@@ -215,10 +209,16 @@ Don&#8217;t do long task in loop. Use a separated thread to not perturbate the n
 <tt class="descname">on_enter_sleeping</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.on_enter_sleeping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.on_enter_sleeping" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="janitoo_rantanplan.rantanplan.RantanplanBus.on_exit_sleeping">
+<tt class="descname">on_exit_sleeping</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.on_exit_sleeping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.on_exit_sleeping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus.polled_sensors">
 <tt class="descname">polled_sensors</tt><a class="reference internal" href="../_modules/janitoo_rantanplan/rantanplan.html#RantanplanBus.polled_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.polled_sensors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The sensors we will poll</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus.start">
@@ -228,7 +228,7 @@ Don&#8217;t do long task in loop. Use a separated thread to not perturbate the n
 
 <dl class="attribute">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus.states">
-<tt class="descname">states</tt><em class="property"> = ['sleeping', 'reporting', {'name': 'guarding', 'children': ['barking', 'bitting']}, {'name': 'obeying', 'children': ['barking', 'bitting']}]</em><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.states" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">states</tt><em class="property"> = ['booting', 'sleeping', 'reporting', {'name': 'guarding', 'children': ['barking', 'bitting']}, {'name': 'obeying', 'children': ['barking', 'bitting']}]</em><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.states" title="Permalink to this definition">¶</a></dt>
 <dd><p>The rantanplan states :
 - sleeping : bbzzzzzz...
 - reporting : only reports events as normal values ... what a good job
@@ -266,7 +266,7 @@ Don&#8217;t do long task in loop. Use a separated thread to not perturbate the n
 
 <dl class="attribute">
 <dt id="janitoo_rantanplan.rantanplan.RantanplanBus.transitions">
-<tt class="descname">transitions</tt><em class="property"> = [{'dest': 'reporting', 'source': '*', 'trigger': 'wakeup'}, {'dest': 'reporting', 'source': '*', 'trigger': 'report'}, {'dest': 'sleeping', 'source': '*', 'trigger': 'sleep'}, {'dest': 'guarding', 'source': '*', 'trigger': 'guard'}, {'dest': 'guarding_barking', 'source': 'guarding', 'trigger': 'bark'}, {'dest': 'guarding_bitting', 'source': 'guarding', 'trigger': 'bite'}, {'dest': 'obeying', 'source': 'guarding', 'trigger': 'obey'}, {'dest': 'obeying_barking', 'source': 'obeying', 'trigger': 'bark'}, {'dest': 'obeying_bitting', 'source': 'obeying', 'trigger': 'bite'}]</em><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.transitions" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">transitions</tt><em class="property"> = [{'dest': 'sleeping', 'source': 'booting', 'trigger': 'boot', 'conditions': 'condition_values'}, {'dest': 'sleeping', 'source': '*', 'trigger': 'sleep'}, {'dest': 'reporting', 'source': '*', 'trigger': 'wakeup', 'conditions': 'condition_values'}, {'dest': 'reporting', 'source': '*', 'trigger': 'report', 'conditions': 'condition_values'}, {'dest': 'guarding', 'source': '*', 'trigger': 'guard', 'conditions': 'condition_values'}, {'dest': 'guarding_barking', 'source': 'guarding', 'trigger': 'bark'}, {'dest': 'guarding_bitting', 'source': 'guarding', 'trigger': 'bite'}, {'dest': 'obeying', 'source': 'guarding', 'trigger': 'obey'}, {'dest': 'obeying_barking', 'source': 'obeying', 'trigger': 'bark'}, {'dest': 'obeying_bitting', 'source': 'obeying', 'trigger': 'bite'}]</em><a class="headerlink" href="#janitoo_rantanplan.rantanplan.RantanplanBus.transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

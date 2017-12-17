@@ -183,7 +183,6 @@ class RantanplanBus(JNTFsmBus):
             label='proximity',
             default=150,
         )
-        self._bus_lock = threading.Lock()
         self.presence_events = {}
 
         uuid="{:s}_temperature".format(OID)
@@ -264,20 +263,6 @@ class RantanplanBus(JNTFsmBus):
             logger.exception("[%s] - Error in on_enter_guarding", self.__class__.__name__)
         finally:
             self.bus_release()
-
-    def bus_acquire(self, blocking=True):
-        """Get a lock on the bus"""
-        if self._bus_lock.acquire(blocking):
-            return True
-        return False
-
-    def bus_release(self):
-        """Release a lock on the bus"""
-        self._bus_lock.release()
-
-    def bus_locked(self):
-        """Get status of the lock"""
-        return self._bus_lock.locked()
 
     def stop_check(self):
         """Check that the component is 'available'

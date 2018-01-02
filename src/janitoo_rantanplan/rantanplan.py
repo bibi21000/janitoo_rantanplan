@@ -222,20 +222,20 @@ class RantanplanBus(JNTFsmBus):
         """
         """
         logger.debug("[%s] - on_enter_reporting", self.__class__.__name__)
-        self.bus_acquire()
+        self.fsm_bus_acquire()
         try:
             self.nodeman.find_value('led', 'blink').data = 'heartbeat'
             self.nodeman.add_polls(self.polled_sensors, slow_start=True, overwrite=False)
         except Exception:
             logger.exception("[%s] - Error in on_enter_reporting", self.__class__.__name__)
         finally:
-            self.bus_release()
+            self.fsm_bus_release()
 
     def on_enter_sleeping(self):
         """
         """
         logger.debug("[%s] - on_enter_sleeping", self.__class__.__name__)
-        self.bus_acquire()
+        self.fsm_bus_acquire()
         try:
             self.nodeman.remove_polls(self.polled_sensors)
             self.nodeman.find_value('led', 'blink').data = 'off'
@@ -243,7 +243,7 @@ class RantanplanBus(JNTFsmBus):
         except Exception:
             logger.exception("[%s] - Error in on_enter_sleeping", self.__class__.__name__)
         finally:
-            self.bus_release()
+            self.fsm_bus_release()
 
     def on_exit_sleeping(self):
         """
@@ -255,14 +255,14 @@ class RantanplanBus(JNTFsmBus):
         """
         """
         logger.debug("[%s] - on_enter_guarding", self.__class__.__name__)
-        self.bus_acquire()
+        self.fsm_bus_acquire()
         try:
             self.nodeman.find_value('led', 'blink').data = 'info'
             self.nodeman.add_polls(self.polled_sensors, slow_start=True, overwrite=False)
         except Exception:
             logger.exception("[%s] - Error in on_enter_guarding", self.__class__.__name__)
         finally:
-            self.bus_release()
+            self.fsm_bus_release()
 
     def stop_check(self):
         """Check that the component is 'available'
@@ -319,19 +319,19 @@ class RantanplanBus(JNTFsmBus):
         finally:
             self.bus_release()
 
-    def start(self, mqttc, trigger_thread_reload_cb=None):
+    def start(self, mqttc, trigger_thread_reload_cb=None, **kwargs):
         """Start the bus
         """
         for bus in self.buses:
-            self.buses[bus].start(mqttc, trigger_thread_reload_cb=None)
-        JNTFsmBus.start(self, mqttc, trigger_thread_reload_cb)
+            self.buses[bus].start(mqttc, trigger_thread_reload_cb=None, **kwargs)
+        JNTFsmBus.start(self, mqttc, trigger_thread_reload_cb, **kwargs)
 
-    def stop(self):
+    def stop(self, **kwargs):
         """Stop the bus
         """
         self.stop_check()
         for bus in self.buses:
-            self.buses[bus].stop()
+            self.buses[bus].stop(**kwargs)
         JNTFsmBus.stop(self)
 
     def loop(self, stopevent):
